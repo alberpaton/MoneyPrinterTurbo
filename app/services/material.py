@@ -62,7 +62,7 @@ def search_videos_pexels(
     video_width, video_height = aspect.to_resolution()
     api_key = get_api_key("pexels_api_keys")
     headers = {
-        "Authorization": api_key,
+        "Authorization": str(api_key).strip(),
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
     }
     # Build URL
