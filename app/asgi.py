@@ -13,6 +13,7 @@ from app.config import config
 from app.models.exception import HttpException
 from app.router import root_api_router
 from app.utils import utils
+from app.utils.api_auth import is_authorized
 
 
 def exception_handler(request: Request, e: HttpException):
@@ -51,6 +52,18 @@ def get_application() -> FastAPI:
 
 
 app = get_application()
+
+API_TOKEN = os.getenv("API_TOKEN", "")
+if not API_TOKEN:
+    logger.warning("API_TOKEN is not set: the REST API is public")
+
+
+@app.middleware("http")
+async def require_api_token(request: Request, call_next):
+    if not is_authorized(request.url.path, request.method, dict(request.headers), API_TOKEN):
+        return JSONResponse(status_code=401, content={"status": 401, "message": "unauthorized"})
+    return await call_next(request)
+
 
 # Configures the CORS middleware for the FastAPI app
 cors_allowed_origins_str = os.getenv("CORS_ALLOWED_ORIGINS", "")
