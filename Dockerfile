@@ -18,7 +18,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Fix security policy for ImageMagick
-RUN sed -i '/<policy domain="path" rights="none" pattern="@\*"/d' /etc/ImageMagick-6/policy.xml
+RUN for f in /etc/ImageMagick-6/policy.xml /etc/ImageMagick-7/policy.xml; do \
+        [ -f "$f" ] && sed -i '/<policy domain="path" rights="none" pattern="@\*"/d' "$f"; \
+    done; true
 
 # Copy only the requirements.txt first to leverage Docker cache
 COPY requirements.txt ./
